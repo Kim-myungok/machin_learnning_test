@@ -32,9 +32,7 @@ class preprocessing(data_collection, data_info):
     
     def run(self):
         self.zero_preprocessing_in_the_data()
-        join_df = self.random_extraction_of_data()
-        
-        return join_df
+        self.set_join_df(self.random_extraction_of_data())
     
     def zero_preprocessing_in_the_data(self):
         # 0인 데이터를 결측치 처리하여 삭제 
@@ -72,14 +70,25 @@ class preprocessing(data_collection, data_info):
         
         return join_df
 
-def data_preprocessing_run(number_of_data):
-    file_name_list = ['청소', '수면', '요리2', '활동']
-    # 청소, 수면, 요리2, 활동에 대하여 데이터를 수집함.
-    data = preprocessing(file_name_list, number_of_data)
-    return data.run()
+    def get_join_df(self):
+        return self.join_df
+    
+    def set_join_df(self, df):
+        self.join_df = df
+
+class run(preprocessing):
+
+    def __init__(self, number_of_data):
+        file_name_list = ['청소', '수면', '요리2', '활동']
+        super().__init__(file_name_list, number_of_data)
+        self.data_preprocessing_run()
+
+    def data_preprocessing_run(self):
+        # 청소, 수면, 요리2, 활동에 대하여 데이터를 수집함.
+        super().run()
 
 if __name__ == '__main__':
     number_of_data = 15
-    df = data_preprocessing_run(number_of_data)
+    df = run(number_of_data).get_join_df()
     print(df)
     print(df.shape)
