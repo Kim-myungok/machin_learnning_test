@@ -2,91 +2,84 @@ import pandas as pd
 import missingno as msno
 import matplotlib.pyplot as plt
 
-class data_collection:
-    # private 변수 선언
-    __df = pd.DataFrame()
-    __df25 = pd.DataFrame()
-    n = 100
+class data_info():
+    info = {'청소': {}, '수면': {}, '요리2': {}, '활동': {}}
 
-    def __init__(self, file_name):
-        self.__df = pd.read_excel( 'data/' + file_name + '.xlsx' )
-        self.run()
+class data_collection():
+    # 각 패턴에 대하여 데이터 수집
+    def __init__(self, file_name_list):
+        self.df_list = []
 
+        for file_name in file_name_list:
+            df = pd.read_excel("data/" + file_name + ".xlsx")
+            self.df_list.append(df)
+
+    def print_df_list(self):
+        print(self.df_list)
+
+    def get_df_list(self):
+        return self.df_list
+
+    def set_df_list(self, df_list):
+        self.df_list = df_list
+
+            
+class preprocessing(data_collection, data_info):
+
+    def __init__(self, file_name_list, number_of_data):
+        super().__init__(file_name_list)
+        self.number_of_data = number_of_data
+    
     def run(self):
         self.zero_preprocessing_in_the_data()
-        self.random_extraction_of_25_data()
-
+        join_df = self.random_extraction_of_data()
+        
+        return join_df
+    
     def zero_preprocessing_in_the_data(self):
-        # print(self.)
-        for i in range(0, len(self.__df)):
-            for j in range(1, len(self.__df.columns)):
-                if self.__df.iat[i, j] == 0:
-                    self.__df.iat[i, j] = 'NaN'
-                    break
+        # 0인 데이터를 결측치 처리하여 삭제 
+        df_list = []
+        for df in super().get_df_list():
+            for c in df.columns:
+                drop_idx = df[ df[c] == 0 ].index
+                df = df.drop(drop_idx)
+            # msno.matrix(df)
+            # plt.show()
+            df.reset_index(drop=True)
+            for contact in df.isnull().sum():
+                # print(contact)
+                if contact != 0:
+                    data_info.info[df.iat[0, 0]]['is_null'] = True
+                    data_info.info[df.iat[0, 0]]['number_of_zero'] = contact
+                else:
+                    data_info.info[df.iat[0, 0]]['is_null'] = False
+                    data_info.info[df.iat[0, 0]]['number_of_zero'] = 0
+            data_info.info[df.iat[0, 0]]['len'] = len(df)
+            print(data_info.info[df.iat[0, 0]])
+            df_list.append(df)
+        super().set_df_list(df_list)
 
-        print(self.__df.isnull().sum())
-        msno.matrix(self.__df)
-        plt.show()
-        self.__df.dropna()
-        print(self.__df)
-        print(self.__df.isnull().sum())
-        pass
-    
-    def random_extraction_of_25_data(self):
-        self.set_df25(self.__df.sample(n=self.n, random_state=42))
-        # print(self.__df25)
-    
-    def print_df(self):
-        print(self.__df)
+    def random_extraction_of_data(self):
+        # 랜덤으로 self.n의 수만큼 데이터 추출
+        df_list = []
+        for df in super().get_df_list():
+            df_list.append(df.sample(n=self.number_of_data))
+        
+        # 데이터 리스트 합치기
+        join_df = pd.DataFrame()
+        for df in df_list:
+            join_df = pd.concat([join_df, df], ignore_index=True)
+        
+        return join_df
 
-    def get_df(self):
-        return self.__df
-
-    def print_df25(self):
-        print(self.__df25)
-
-    def get_df25(self):
-        return self.__df25
-
-    def set_df25(self, df):
-        self.__df25 = df
-
-class data_join:
-    __df_join = pd.DataFrame()
-
-    def __init__(self, df_list):
-        self.join(df_list)
-
-    def join(self, class_data_list):
-        for class_data in class_data_list:
-            self.set_df_join(pd.concat([self.__df_join, class_data.get_df25()], ignore_index=True))
-        # print(self.__df_join)
-
-    def get_df_join(self):
-        return self.__df_join
-
-    def set_df_join(self, df):
-        self.__df_join = df
-
-def data_preprocessing_run():
-    pattern = ['청소', '수면', '요리2', '활동']
+def data_preprocessing_run(number_of_data):
+    file_name_list = ['청소', '수면', '요리2', '활동']
     # 청소, 수면, 요리2, 활동에 대하여 데이터를 수집함.
-    data_collection_class_list = []
-    for p in pattern:
-        data_collection_class_list.append(data_collection(p))
-    # for i in range(len(data_collection_list)):
-    #     data_collection_list[i].print_df25()
-
-    data_join_collection_class = data_join(data_collection_class_list)
-    df_join = data_join_collection_class.get_df_join()
-
-    # 객체해제
-    for data_collection_class in data_collection_class_list:
-        del data_collection_class
-    del data_join_collection_class
-
-    
-    return df_join
+    data = preprocessing(file_name_list, number_of_data)
+    return data.run()
 
 if __name__ == '__main__':
-    print(data_preprocessing_run())
+    number_of_data = 15
+    df = data_preprocessing_run(number_of_data)
+    print(df)
+    print(df.shape)
