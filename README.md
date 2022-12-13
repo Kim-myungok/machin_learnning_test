@@ -1,8 +1,8 @@
-> # machin_learnning_test
-- start date: 2022. 12. 09
+> # machin_learning_test
+- start date: 2022. 12. 09. Fri
 
 > TOPIC
-###### Machine-learnning(ML), Pattern, Classifier
+###### Machine-learning(ML), Pattern, Classifier
 
 > AUTHOR INFO.
 - NAME: KIM MYEONG OK
