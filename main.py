@@ -6,8 +6,9 @@ from sklearn.linear_model import SGDClassifier
 import numpy as np
 import matplotlib.pyplot as plt
 
+NUMBER_OF_DATA = 25
 
-class sgd:
+class machine_learning_model():
     def __init__(self):
         self.run()
         
@@ -18,12 +19,13 @@ class sgd:
         # self.good_model_search()
         
     def train_test_split(self):
-        self.df = dp.data_preprocessing_run()
-        print('isnull(): ', self.df.isnull().sum())
-        # print(np.isfinite(self.df))
+        # 훈련세트와 테스트세트 나누기
+        self.df = dp.run(NUMBER_OF_DATA).get_join_df()
+        print(self.df)
+
         df_columns = self.df.columns.to_list()
-        print(df_columns[1:])
-        print(df_columns[:1])
+        # print(df_columns[1:]) # ['PM2d5_1', 'CO2_1', 'PM2d5_2', 'CO2_2', 'PM2d5_3', 'CO2_3']
+        # print(df_columns[:1]) # ['Pattern']
         self.data_input = self.df[df_columns[1:]].to_numpy()
         self.data_target = self.df[df_columns[:1]].to_numpy()
 
@@ -31,6 +33,7 @@ class sgd:
             self.data_input, self.data_target)
 
     def scale_transform(self):
+        # 특성 스케일 맞추기
         ss = StandardScaler()
         ss.fit(self.train_input)
         self.train_scaled = ss.transform(self.train_input)
@@ -65,5 +68,5 @@ class sgd:
 
 if __name__ == '__main__':
     # 데이터 수집 및 각 데이터에 0이 포함된 데이터를 제외하여 각 패턴별로 25개씩 묶은 데이터세트
-    df = sgd()
+    df = machine_learning_model()
 
