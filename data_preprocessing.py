@@ -61,7 +61,7 @@ class preprocessing(data_collection, data_info):
         # 랜덤으로 self.n의 수만큼 데이터 추출
         df_list = []
         for df in super().get_df_list():
-            df_list.append(df.sample(n=self.number_of_data))
+            df_list.append(df.sample(n=self.number_of_data, random_state=42))
         
         # 데이터 리스트 합치기
         join_df = pd.DataFrame()
