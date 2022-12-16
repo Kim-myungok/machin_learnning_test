@@ -11,11 +11,17 @@ from time import sleep
 
 from tqdm import tqdm
 from tqdm import trange
+from scipy.stats import mode
+
+NUMBER_OF_DATA = 100
+NUM = 100
 
 class classifier_model:
     def __init__(self):
-        # self.predict = np.array([[0]])
         pass
+
+    def model_application(self, train_scaled, train_target, test_scaled, test_target):
+        return self.sgd_classifier(train_scaled, train_target, test_scaled, test_target)
 
     def knn_classifier(self, train_scaled, train_target, test_scaled, test_target):
         pass
@@ -43,7 +49,7 @@ class classifier_model:
         classes = np.unique(train_target)
         sleep(5)
 
-        for _ in tqdm(range(0, 10)) :
+        for _ in tqdm(range(0, NUM)) :
             sc.partial_fit(train_scaled, train_target, classes = classes)
             train_score.append(sc.score(train_scaled, train_target))
             test_score.append(sc.score(test_scaled, test_target))
@@ -64,7 +70,6 @@ class machine_learning(classifier_model):
 
     def __init__(self):
         super().__init__()
-        self.NUMBER_OF_DATA = 100
 
     def get_model(self):
         return self.model
@@ -72,28 +77,37 @@ class machine_learning(classifier_model):
     def get_predict(self, data):
         # 특성 공학
         data_poly = self.poly.transform(data)
-        
         return self.model.predict(data_poly)
 
+    def test(self):
+        test_df = pd.read_excel('test_input.xlsx').to_numpy()
+        predict = self.get_predict(test_df)
+
+        mode_ = str(mode(predict)[0][0])
+        print("    >>학습한 모델이 테스트 샘플을 예측한 값은 '" + mode_ + "' 입니다.")
+        print("\tㄴ " + str(mode(predict)[1][0]) + "(" + str(round(mode(predict)[1][0]/len(test_df)*100, 2)) + " %)")
+
+    def model_score(self):
+        print("train_score =", self.model.score(self.train_poly, self.train_target))
+        print("test_score =", self.model.score(self.test_poly, self.test_target))
+        
     def run(self):
         # while self.NUMBER_OF_DATA <= 10000:
-        print('\t\t>> TOTAL_NUMBER_OF_DATA =', self.NUMBER_OF_DATA*4)
+        print('\t\t>> TOTAL_NUMBER_OF_DATA =', NUMBER_OF_DATA*4)
         self.train_test_split()
         self.scale_transform()
-        # self.model_list = [super().knn_classifier(self.train_scaled, self.train_target, self.test_scaled, self.test_target),
-        #                super().logistic_regression(self.train_scaled, self.train_target, self.test_scaled, self.test_target),
-        #                super().sgd_classifier(self.train_scaled, self.train_target, self.test_scaled, self.test_target)]
-
-        self.model = super().sgd_classifier(self.train_poly, self.train_target, self.test_poly, self.test_target)
+        self.model = super().model_application(self.train_poly, self.train_target, self.test_poly, self.test_target)
             # break
             # self.NUMBER_OF_DATA = self.NUMBER_OF_DATA + 25
             # self.sgd_classifier()
         # self.good_model_search()
         print('__학습 완료__')
+        self.model_score()
+        self.test()
         
     def train_test_split(self):
         # 훈련세트와 테스트세트 나누기
-        self.df = dp.run(self.NUMBER_OF_DATA).get_join_df()
+        self.df = dp.run(NUMBER_OF_DATA).get_join_df()
         print(self.df)
 
         df_columns = self.df.columns.to_list()
@@ -106,8 +120,6 @@ class machine_learning(classifier_model):
             self.data_input, self.data_target)
         
     def scale_transform(self):
-        # 표준 점수
-
         # 특성 공학
         self.poly = PolynomialFeatures(include_bias=False)
         self.poly.fit(self.train_input)
@@ -138,4 +150,5 @@ class machine_learning(classifier_model):
     def predict(self):
         pass
 if __name__ == '__main__':
-    df = machine_learning()
+    ML = machine_learning()
+    ML.run()
