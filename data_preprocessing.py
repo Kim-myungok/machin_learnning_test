@@ -39,6 +39,7 @@ class preprocessing(data_collection, data_info):
         df_list = []
         for df in super().get_df_list():
             for c in df.columns:
+                df = df.drop_duplicates()
                 drop_idx = df[ df[c] == 0 ].index
                 df = df.drop(drop_idx)
             # msno.matrix(df)
