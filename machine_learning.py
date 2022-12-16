@@ -1,4 +1,5 @@
 import data_preprocessing as dp
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, PolynomialFeatures
@@ -15,6 +16,7 @@ class classifier_model:
     def __init__(self):
         # self.predict = np.array([[0]])
         pass
+
     def knn_classifier(self, train_scaled, train_target, test_scaled, test_target):
         pass
 
@@ -41,19 +43,19 @@ class classifier_model:
         classes = np.unique(train_target)
         sleep(5)
 
-        for _ in tqdm(range(0, 300)) :
+        for _ in tqdm(range(0, 10)) :
             sc.partial_fit(train_scaled, train_target, classes = classes)
             train_score.append(sc.score(train_scaled, train_target))
             test_score.append(sc.score(test_scaled, test_target))
 
         # sc.predict(self.predict)
-        plt.plot(train_score, label='train_score')
-        plt.plot(test_score, label='test_score')
-        plt.xlabel("epoch")
-        plt.ylabel("accuracy")
-        plt.legend()
-        plt.show()
-        return train_score, test_score
+        # plt.plot(train_score, label='train_score')
+        # plt.plot(test_score, label='test_score')
+        # plt.xlabel("epoch")
+        # plt.ylabel("accuracy")
+        # plt.legend()
+        # plt.show()
+        return sc
 
     def sgdd_classifier(self, train_scaled, train_target, test_scaled, test_target):
         pass
@@ -63,22 +65,31 @@ class machine_learning(classifier_model):
     def __init__(self):
         super().__init__()
         self.NUMBER_OF_DATA = 100
-        self.run()
-        
-    def run(self):
-        while self.NUMBER_OF_DATA <= 10000:
-            print('\t\t>> TOTAL_NUMBER_OF_DATA =', self.NUMBER_OF_DATA*4)
-            self.train_test_split()
-            self.scale_transform()
-            # self.model_list = [super().knn_classifier(self.train_scaled, self.train_target, self.test_scaled, self.test_target),
-            #                super().logistic_regression(self.train_scaled, self.train_target, self.test_scaled, self.test_target),
-            #                super().sgd_classifier(self.train_scaled, self.train_target, self.test_scaled, self.test_target)]
 
-            super().sgd_classifier(self.train_poly, self.train_target, self.test_poly, self.test_target)
-            break
+    def get_model(self):
+        return self.model
+        
+    def get_predict(self, data):
+        # 특성 공학
+        data_poly = self.poly.transform(data)
+        
+        return self.model.predict(data_poly)
+
+    def run(self):
+        # while self.NUMBER_OF_DATA <= 10000:
+        print('\t\t>> TOTAL_NUMBER_OF_DATA =', self.NUMBER_OF_DATA*4)
+        self.train_test_split()
+        self.scale_transform()
+        # self.model_list = [super().knn_classifier(self.train_scaled, self.train_target, self.test_scaled, self.test_target),
+        #                super().logistic_regression(self.train_scaled, self.train_target, self.test_scaled, self.test_target),
+        #                super().sgd_classifier(self.train_scaled, self.train_target, self.test_scaled, self.test_target)]
+
+        self.model = super().sgd_classifier(self.train_poly, self.train_target, self.test_poly, self.test_target)
+            # break
             # self.NUMBER_OF_DATA = self.NUMBER_OF_DATA + 25
             # self.sgd_classifier()
         # self.good_model_search()
+        print('__학습 완료__')
         
     def train_test_split(self):
         # 훈련세트와 테스트세트 나누기
@@ -98,11 +109,11 @@ class machine_learning(classifier_model):
         # 표준 점수
 
         # 특성 공학
-        poly = PolynomialFeatures(include_bias=False)
-        poly.fit(self.train_input)
+        self.poly = PolynomialFeatures(include_bias=False)
+        self.poly.fit(self.train_input)
 
-        self.train_poly = poly.transform(self.train_input)
-        self.test_poly = poly.transform(self.test_input)
+        self.train_poly = self.poly.transform(self.train_input)
+        self.test_poly = self.poly.transform(self.test_input)
         # super().predict = poly.transform(np.array([[1.3, 665, 0.7, 694, 1.9, 697]]))
         
 
