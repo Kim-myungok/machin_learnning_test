@@ -46,12 +46,15 @@ class __socket__(packet_rev.rev):
                 print('데이터가 5개 이상입니다.')
                 # 데이터 개수가 5개 이상일 경우, 머신러닝 모델에서 예측
                 data = super().get_df().loc[:4].to_numpy()
+                
                 self.predict = self.ML.get_predict(data)
                 print()
                 print(self.predict)
                 print(mode(self.predict))
                 # 예측에 사용한 데이터 삭제
-                # super().set_df()
+                index = super().get_df().loc[:4].index
+                super().set_df(super().get_df().drop(index))
+                # print(self.ML.model_score())
             client.close()
 
     def socket_connection(self):
