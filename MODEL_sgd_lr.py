@@ -2,9 +2,8 @@ import data_preprocessing as dp
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
-
-# 분류 모델
 from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+# 분류 모델
 from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import SGDClassifier
 # 트리 모델
@@ -48,14 +47,14 @@ class classifier_model:
         test_score = lr.score(test_scaled, test_target)
         print(train_score)
         print(test_score)
-        return train_score, test_score
+        return lr
 
     def sgd_classifier(self, train_scaled, train_target, test_scaled, test_target):
         epoch = 0
         iterec = []
         coef = []
-        sc = SGDClassifier(loss='hinge', max_iter=100, tol=None, random_state=42)
-        sc.fit(train_scaled, train_target)
+        sgd = SGDClassifier(loss='hinge', max_iter=100, tol=None, random_state=42)
+        sgd.fit(train_scaled, train_target)
         # print(sc.score(train_scaled, train_target))
         # print(sc.score(test_scaled, test_target))
         # train_score = []
@@ -66,7 +65,7 @@ class classifier_model:
         # print('\t\t>> self.model_epoch =', self.model_epoch)
 
         for _ in range(0, self.model_epoch):
-            sc.partial_fit(train_scaled, train_target, classes = classes)
+            sgd.partial_fit(train_scaled, train_target, classes = classes)
         # train_score.append(sc.score(train_scaled, train_target))
         # test_score.append(sc.score(test_scaled, test_target))
 
@@ -77,7 +76,7 @@ class classifier_model:
         # plt.ylabel("accuracy")
         # plt.legend()
         # plt.show()
-        return sc
+        return sgd
 
     def add_model_epoch(self, epoch):
         self.model_epoch = epoch
