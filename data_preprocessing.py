@@ -59,14 +59,6 @@ class preprocessing(data_collection, data_info):
                                  'PM2d5_2', 'PM10_2', 'Temp_2', 'Humi_2', 'CO2_2',
                                  'PM2d5_3', 'PM10_3', 'Temp_3', 'Humi_3', 'CO2_3']
             for c in df.columns:
-<<<<<<< HEAD
-                df = df.drop_duplicates()
-                drop_idx = df[ df[c] == 0 ].index
-                df = df.drop(drop_idx)
-            # msno.matrix(df)
-            # plt.show()
-            df.reset_index(drop=True)
-=======
                 if c in df_columns_except:
                     df = df.drop_duplicates()
                     drop_idx = df[ df[c] == 0 ].index
@@ -74,7 +66,6 @@ class preprocessing(data_collection, data_info):
                     # msno.matrix(df)
                     # plt.show()
                 df.reset_index(drop=True)
->>>>>>> origin/code
             for contact in df.isnull().sum():
                 # print(contact)
                 if contact != 0:

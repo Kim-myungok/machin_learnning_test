@@ -7,6 +7,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import SGDClassifier
+# 트리 모델
+from sklearn.experimental import enable_hist_gradient_boosting
+from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.model_selection import cross_validate
+from lightgbm import LGBMClassifier
 # 기타 라이브러리
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,17 +25,9 @@ from tqdm import tqdm
 from tqdm import trange
 from scipy.stats import mode
 
-<<<<<<< HEAD
-NUMBER_OF_DATA = 100
-NUM = 100
-
-class classifier_model:
-    def __init__(self):
-        pass
-=======
 NUMBER_OF_DATA = 250
 NUM = 1000
-
+TARGET_SCORE = 60
 TEST_INPUT_FILE_LOCAL = 'data/10월 .min/'
 
 class classifier_model:
@@ -39,71 +36,10 @@ class classifier_model:
 
     def model_application(self, train_scaled, train_target, test_scaled, test_target):
         return self.sgd_classifier(train_scaled, train_target, test_scaled, test_target)
->>>>>>> origin/code
-
-    def model_application(self, train_scaled, train_target, test_scaled, test_target):
-        return self.sgd_classifier(train_scaled, train_target, test_scaled, test_target)
 
     def knn_classifier(self, train_scaled, train_target, test_scaled, test_target):
         pass
 
-    def logistic_regression(self, train_scaled, train_target, test_scaled, test_target):
-        lr = LogisticRegression(C=20, max_iter=1000)
-        lr.fit(train_scaled, train_target)
-
-        train_score = lr.score(train_scaled, train_target)
-        test_score = lr.score(test_scaled, test_target)
-        print(train_score)
-        print(test_score)
-        return train_score, test_score
-
-    def sgd_classifier(self, train_scaled, train_target, test_scaled, test_target):
-        epoch = 0
-        iterec = []
-        coef = []
-        sc = SGDClassifier(loss='hinge', max_iter=100, tol=None, random_state=42)
-        sc.fit(train_scaled, train_target)
-        # print(sc.score(train_scaled, train_target))
-        # print(sc.score(test_scaled, test_target))
-        # train_score = []
-        # test_score = []
-        classes = np.unique(train_target)
-        # sleep(5)
-        # self.model_epoch = self.model_epoch + 10
-        # print('\t\t>> self.model_epoch =', self.model_epoch)
-
-<<<<<<< HEAD
-        for _ in tqdm(range(0, NUM)) :
-=======
-        for _ in range(0, self.model_epoch):
->>>>>>> origin/code
-            sc.partial_fit(train_scaled, train_target, classes = classes)
-        # train_score.append(sc.score(train_scaled, train_target))
-        # test_score.append(sc.score(test_scaled, test_target))
-
-        # sc.predict(self.predict)
-        # plt.plot(train_score, label='train_score')
-        # plt.plot(test_score, label='test_score')
-        # plt.xlabel("epoch")
-        # plt.ylabel("accuracy")
-        # plt.legend()
-        # plt.show()
-        return sc
-
-    def add_model_epoch(self, epoch):
-        self.model_epoch = epoch
-        print('\t\t>> add_model_epoch =', self.model_epoch)
-        
-class tree_model:
-    def __init__(self):
-        self.model_epoch = 0
-
-    def model_application(self, train_scaled, train_target, test_scaled, test_target):
-        return self.sgd_classifier(train_scaled, train_target, test_scaled, test_target)
-
-    def knn_classifier(self, train_scaled, train_target, test_scaled, test_target):
-        pass
-    
     def logistic_regression(self, train_scaled, train_target, test_scaled, test_target):
         lr = LogisticRegression(C=20, max_iter=1000)
         lr.fit(train_scaled, train_target)
@@ -151,10 +87,8 @@ class machine_learning(classifier_model):
 
     def __init__(self, epoch):
         super().__init__()
-<<<<<<< HEAD
-=======
         self.epoch = epoch
->>>>>>> origin/code
+        self.select_model = {'hgb':0}
 
     def get_model(self):
         return self.model
@@ -165,22 +99,6 @@ class machine_learning(classifier_model):
         return self.model.predict(data_poly)
 
     def test(self):
-<<<<<<< HEAD
-        test_df = pd.read_excel('test_input.xlsx').to_numpy()
-        predict = self.get_predict(test_df)
-
-        mode_ = str(mode(predict)[0][0])
-        print("    >>학습한 모델이 테스트 샘플을 예측한 값은 '" + mode_ + "' 입니다.")
-        print("\tㄴ " + str(mode(predict)[1][0]) + "(" + str(round(mode(predict)[1][0]/len(test_df)*100, 2)) + " %)")
-
-    def model_score(self):
-        print("train_score =", self.model.score(self.train_poly, self.train_target))
-        print("test_score =", self.model.score(self.test_poly, self.test_target))
-        
-    def run(self):
-        # while self.NUMBER_OF_DATA <= 10000:
-        print('\t\t>> TOTAL_NUMBER_OF_DATA =', NUMBER_OF_DATA*4)
-=======
         print(self.df)
         train_score = self.model.score(self.train_poly, self.train_target)
         test_score = self.model.score(self.test_poly, self.test_target)
@@ -218,7 +136,7 @@ class machine_learning(classifier_model):
         test_score = self.model.score(self.test_poly, self.test_target)
         print("train_score =", train_score)
         print("test_score =", test_score)
-        if train_score * 100 > 60:
+        if train_score * 100 > TARGET_SCORE:
             if -1 <= (train_score * 100) - (test_score * 100) and (train_score * 100) - (test_score * 100) <= 1:
                 return False
         return True
@@ -226,7 +144,6 @@ class machine_learning(classifier_model):
     def run(self):
         # while self.NUMBER_OF_DATA <= 10000:
         # print('\t\t>> TOTAL_NUMBER_OF_DATA =', NUMBER_OF_DATA*4)
->>>>>>> origin/code
         self.train_test_split()
         self.scale_transform()
         self.model = super().model_application(self.train_poly, self.train_target, self.test_poly, self.test_target)
@@ -234,11 +151,6 @@ class machine_learning(classifier_model):
             # self.NUMBER_OF_DATA = self.NUMBER_OF_DATA + 25
             # self.sgd_classifier()
         # self.good_model_search()
-<<<<<<< HEAD
-        print('__학습 완료__')
-        self.model_score()
-        self.test()
-=======
         # print('__학습 완료__')
         if self.model_score():
             self.error(-1)
@@ -247,16 +159,11 @@ class machine_learning(classifier_model):
         else:
             return True
         
->>>>>>> origin/code
         
     def train_test_split(self):
         # 훈련세트와 테스트세트 나누기
         self.df = dp.run(NUMBER_OF_DATA).get_join_df()
-<<<<<<< HEAD
-        print(self.df)
-=======
         # print(self.df)
->>>>>>> origin/code
 
         df_columns = self.df.columns.to_list()
         # print(df_columns[1:]) # ['PM2d5_1', 'CO2_1', 'PM2d5_2', 'CO2_2', 'PM2d5_3', 'CO2_3']
@@ -302,10 +209,6 @@ class machine_learning(classifier_model):
     #     plt.show()
 
 if __name__ == '__main__':
-<<<<<<< HEAD
-    ML = machine_learning()
-    ML.run()
-=======
     epoch = 0
     while True:
         epoch = epoch + 100
@@ -321,4 +224,3 @@ if __name__ == '__main__':
     while True:
         if ML.test() == -1:
             break
->>>>>>> origin/code
