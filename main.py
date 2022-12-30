@@ -5,7 +5,7 @@ import sys
 import bitstring as bs
 import hexdump as hd
 import packet_revied as packet_rev
-import MODEL_sgd_lr as ml
+import machine_learning as ml
 import pandas as pd
 from scipy.stats import mode
 
