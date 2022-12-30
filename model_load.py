@@ -57,7 +57,7 @@ class machine_learning():
             df_prdt = self.df_predict__init__()
             for i in range(NUMBER_OF_TIMES):
                 # 테스트할 데이터를 넘파이 배열로 변경하여 랜덤으로 10개씩 추출하여 예측
-                test_input = test_df[test_df_columns[4:-4]].to_numpy()
+                test_input = test_df[test_df_columns[4:]].to_numpy()
                 test_input = np.random.permutation(test_input)
                 predict = self.get_predict(test_input[:TEST_INPUT_NUMBER])
 
@@ -130,7 +130,7 @@ class machine_learning():
 
 if __name__ == '__main__':
     df = pd.DataFrame()
-    file_name = 'gb_20221229_1733'
+    file_name = 'gb_20221230_1111'
     while True:
         df = machine_learning(file_name).run()
         input_text = input(">> 프로그램을 종료하시겠습니까? [ y(enter) / n ]\n>> ")
