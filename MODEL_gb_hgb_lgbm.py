@@ -83,7 +83,7 @@ class machine_learning(classifier_model):
         df_columns = self.df.columns.to_list()
         # print(df_columns[4:-4]) # [공기질 데이터 모두]
         # print(df_columns[:1])   # [   'Pattern'   ]
-        df_columns_ = df_columns[4:-4]
+        df_columns_ = df_columns[4:]
         # print(df_columns[1], df_columns_)
         data_input = self.df[df_columns_].to_numpy()
         data_target = self.df[df_columns[1]].to_numpy()
@@ -159,8 +159,7 @@ class machine_learning(classifier_model):
         print(self.model.feature_importances_)
 
 if __name__ == '__main__':
-    epoch = 0
-    for n_ in range(91, 100, 10):
+    for n_ in range(30, 199, 10):
         # for lr in [0.001, 0.005, 0.01, 0.05, 0.1, 0.5]:
             ML = machine_learning(n_, 0.1)
             sign = ML.run()
